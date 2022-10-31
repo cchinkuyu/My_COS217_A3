@@ -127,13 +127,66 @@ int SymTable_contains(SymTable_T oSymTable, const char *pcKey){
 
 
 void *SymTable_get(SymTable_T oSymTable, const char *pcKey){
+    struct SymTableNode *psCurrentNode;
+    struct SymTableNode *psNextNode;
 
-};
+    assert(oSymTable != NULL);
+    assert(pcKey != NULL);
+
+    for (psCurrentNode = oSymTable->psFirstNode;
+        psCurrentNode != NULL;
+        psCurrentNode = psNextNode) {
+        psNextNode = psCurrentNode->psNextNode;
+        if ((strcmp((psCurrentNode->pcKey), pcKey)) == 0) {
+            return psCurrentNode;
+        }
+    }
+    return NULL;
+}
 
 void *SymTable_remove(SymTable_T oSymTable, const char *pcKey){
+    struct SymTableNode *psCurrentNode;
+    struct SymTableNode *psPrevNode = NULL;
+    const void *pvValue;
 
-};
+    assert(oSymTable != NULL);
+    assert(pcKey != NULL);
 
-void SymTable_map(SymTable_T oSymTable, void (*pfApply)(const char *pcKey, void *pvValue, void *pvExtra), const void *pvExtra){
+    for (psCurrentNode = oSymTable->psFirstNode;
+        psCurrentNode != NULL;
+        psCurrentNode = psCurrentNode->psNextNode) {
+        if ((strcmp((psCurrentNode->pcKey), pcKey)) == 0) {
+            pvValue = psCurrentNode->pvValue;
+            if (psPrevNode == NULL) {
+                oSymTable->psFirstNode = psCurrentNode->psNextNode;
+            }
+            else {
+                psPrevNode->psNextNode = psCurrentNode->psNextNode;
+            }
+            free((char *) psCurrentNode->pcKey);
+            free(psCurrentNode);
+            oSymTable->numNodes--;
+            return (void *) pvValue;
+        }
+        psPrevNode = psCurrentNode;
+    }
+    return NULL;
+}
 
-};
+void SymTable_map(SymTable_T oSymTable,
+ void (*pfApply)(const char *pcKey, void *pvValue, void *pvExtra),
+ const void *pvExtra){
+
+    struct SymTableNode *psCurrentNode;
+
+    assert(oSymTable != NULL);
+    assert(pfApply != NULL);
+
+    for (psCurrentNode = oSymTable->psFirstNode;
+        psCurrentNode != NULL;
+        psCurrentNode = psNextNode) {
+        psNextNode = psCurrentNode->psNextNode;
+        (*pfApply) (psCurrentNode->pcKey, (void *) psCurrentNode->pvValue, (void *) pvExtra);
+    }
+
+}
