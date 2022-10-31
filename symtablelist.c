@@ -36,6 +36,7 @@ SymTable_T SymTable_new(void) {
     if (oSymTable == NULL) return NULL;
 
     oSymTable->psFirstNode = NULL;
+    oSymTable->numNodes = 0;
     return oSymTable;
 }
 
@@ -50,8 +51,10 @@ void SymTable_free(SymTable_T oSymTable) {
          psCurrentNode != NULL;
          psCurrentNode = psNextNode) {
         psNextNode = psCurrentNode->psNextNode;
+        free((char *)psCurrentNode->pcKey);
         free(psCurrentNode);
     }
+    free(oSymTable);
 }
 
 /* Returns the number of symtable nodes in the symtable parameter
