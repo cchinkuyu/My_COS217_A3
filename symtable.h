@@ -1,6 +1,6 @@
 #ifndef SYMTABLE_INCLUDED
 #define SYMTABLE_INCLUDED
-#include <stdef.h>
+#include <stddef.h>
 
 tydef struct SymTable *SymTable_T;
 
